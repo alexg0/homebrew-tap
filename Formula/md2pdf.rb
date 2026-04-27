@@ -6,9 +6,9 @@
 class Md2pdf < Formula
   desc     "Multi-engine Markdown to PDF converter"
   homepage "https://github.com/alexg0/md2pdf"
-  url      "https://github.com/alexg0/md2pdf/archive/refs/tags/v0.1.3.tar.gz"
-  sha256   "c7cc1b98f0da697ee4ac5a78f5b1c88aa2ccb713793271d80ca741b10ad15717"
-  version  "0.1.3"
+  url      "https://github.com/alexg0/md2pdf/archive/refs/tags/v0.2.0.tar.gz"
+  sha256   "c525576ca1369de9c7af8c63c0fa8f6b10065f58775a7cf185ef1ab0cb2fe75a"
+  version  "0.2.0"
   license  "GPL-3.0-or-later"
 
   depends_on "pandoc" => :recommended
