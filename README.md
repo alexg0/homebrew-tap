@@ -4,7 +4,7 @@ Personal Homebrew tap.
 
 ## Available formulae
 
-- **db48x** - RPL calculator and Qt desktop simulator in the spirit of the HP48 ([source](https://github.com/c3d/db48x))
+- **db48x** - RPL calculator simulators: DM42-style db48x and color DM32-style db50x ([source](https://github.com/c3d/db48x))
 - **md2pdf** — Multi-engine Markdown to PDF converter ([source](https://github.com/alexg0/md2pdf))
 
 ## Install
@@ -13,6 +13,18 @@ Personal Homebrew tap.
 brew install alexg0/tap/md2pdf
 brew install alexg0/tap/db48x
 ```
+
+The db48x formula installs both simulators by default. Launch them with `db48x`
+or `db50x`. To build only one, use `--without-db48x` or `--without-db50x`:
+
+```bash
+brew install alexg0/tap/db48x --without-db48x  # db50x only
+brew install alexg0/tap/db48x --without-db50x  # db48x only
+```
+
+Disabling both is rejected. On macOS, installed app bundles are also available
+under `$(brew --prefix db48x)` and can be opened with `open` or linked into
+`/Applications`.
 
 ## Available casks
 

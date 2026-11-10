@@ -1,9 +1,12 @@
 class Db48x < Formula
-  desc "RPL calculator and desktop simulator in the spirit of the HP48"
+  desc "RPL calculator simulators in the spirit of the HP48"
   homepage "https://github.com/c3d/db48x"
   url "https://github.com/c3d/db48x/archive/refs/tags/v0.10.0.tar.gz"
   sha256 "199569681ae85862f04baca976f53b1c989151376aa0e09ee079a1be848039ed"
   license "LGPL-3.0-only"
+
+  option "without-db48x", "Build without the DM42-style db48x simulator"
+  option "without-db50x", "Build without the color DM32-style db50x simulator"
 
   depends_on "coreutils" => :build
   depends_on "freetype" => :build
@@ -25,32 +28,47 @@ class Db48x < Formula
   end
 
   def install
+    odie "At least one simulator must be enabled" if build.without?("db48x") && build.without?("db50x")
+
     resource("recorder").stage buildpath/"recorder"
     resource("make-it-quick").stage buildpath/"recorder/make-it-quick"
     ENV.prepend_path "PATH", formula_opt_libexec("coreutils")/"gnubin"
 
-    system "gmake", "sim", "VERSION=#{version}", "QMAKE=#{formula_opt_bin("qtbase")}/qmake"
-    if OS.mac?
-      prefix.install "db48x.app"
-      bin.install_symlink prefix/"db48x.app/Contents/MacOS/db48x"
-    else
-      bin.install "db48x"
+    %w[db48x db50x].each do |simulator|
+      next if build.without?(simulator)
+
+      target = (simulator == "db48x") ? "sim" : "color-dm32-sim"
+      system "gmake", target, "VERSION=#{version}", "QMAKE=#{formula_opt_bin("qtbase")}/qmake"
+      if OS.mac?
+        prefix.install "#{simulator}.app"
+        bin.install_symlink prefix/"#{simulator}.app/Contents/MacOS/#{simulator}"
+      else
+        bin.install simulator
+      end
     end
   end
 
   def caveats
     on_macos do
+      example = build.without?("db50x") ? "db48x" : "db50x"
       <<~EOS
-        Launch the simulator with db48x, or open the app with:
-          open #{opt_prefix}/db48x.app
-        To add it to Applications:
-          ln -s #{opt_prefix}/db48x.app /Applications/db48x.app
+        Launch installed simulators with db48x or db50x.
+        Their app bundles are under #{opt_prefix}:
+          db48x.app (unless built --without-db48x)
+          db50x.app (unless built --without-db50x)
+        Open an installed app with open, or link it into /Applications, e.g.:
+          open #{opt_prefix}/#{example}.app
+          ln -s #{opt_prefix}/#{example}.app /Applications/#{example}.app
       EOS
     end
   end
 
   test do
-    assert_equal "5", shell_output("#{bin}/db48x -H -Z -E '2 3 +'").strip
-    assert_equal "144", shell_output("#{bin}/db48x -H -Z -E '12 SQ'").strip
+    %w[db48x db50x].each do |simulator|
+      next if build.without?(simulator)
+
+      assert_equal "5", shell_output("#{bin}/#{simulator} -H -Z -E '2 3 +'").strip
+      assert_equal "144", shell_output("#{bin}/#{simulator} -H -Z -E '12 SQ'").strip
+    end
   end
 end
