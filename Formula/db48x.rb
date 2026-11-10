@@ -27,9 +27,9 @@ class Db48x < Formula
   def install
     resource("recorder").stage buildpath/"recorder"
     resource("make-it-quick").stage buildpath/"recorder/make-it-quick"
-    ENV.prepend_path "PATH", Formula["coreutils"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", formula_opt_libexec("coreutils")/"gnubin"
 
-    system "gmake", "sim", "VERSION=#{version}", "QMAKE=#{Formula["qtbase"].opt_bin}/qmake"
+    system "gmake", "sim", "VERSION=#{version}", "QMAKE=#{formula_opt_bin("qtbase")}/qmake"
     if OS.mac?
       prefix.install "db48x.app"
       bin.install_symlink prefix/"db48x.app/Contents/MacOS/db48x"
